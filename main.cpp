@@ -5,7 +5,11 @@
 
 using std::string;
 using std::cout;
+using std::fstream;
 using std::ofstream;
+using std::ifstream;
+
+#define amount 100
 
 /*
 template <typename N>
@@ -49,27 +53,49 @@ public:
 int main()
 {
 	ofstream out;
-	out.open("C:\\Users\\User\\Documents\\GitHub\\CompanyApp\\DB.txt ", std::ios::app);
+	out.open("DB.txt");  // add ", std::ios::app"  n// C:\\Users\\User\\Documents\\GitHub\\CompanyApp
 	Fabric fabric;
 	AVL avl;
-
+	
+	/* генерация */
 	if (out.is_open())
 	{
 		//DeliveryData data = fabric.generateRandom();
 		//node* root = new node(0, data); // создаём корневой node
 		//avl.insert(0, data);
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < amount; i++)
 		{
-			DeliveryData data = fabric.generateRandom();
-			cout << data;
-			out << data;
-			avl.insert(i, data);
+			DeliveryData data_o = fabric.generateRandom();
+			cout << data_o;
+			out << data_o;
 		}
 		cout << "\nFile: Succeed\n";
+		out.close();
 	}
 	else
 		cout << "\nFile Error: File is not opened\n";
 
-	out.close();
+	/* считывание по частям и работа */
+	ifstream in;
+	in.open("DB.txt");
+	if (in.is_open())
+	{
+		cout << endl << "TEST:\n";
+		for (int i = 0; i < amount/10; i++)
+		{
+			for (int j = 0; j < amount/10; j++)
+			{
+				DeliveryData data_i;
+				in >> data_i;
+				cout << "data\n" << data_i;
+				//avl.insert(i, data);
+			}
+			// do smth (if found -> clear avl and break)
+			// clear avl
+		}
+		in.close();
+	}
+	else
+		cout << "\nFile Error: File is not opened\n";
 }

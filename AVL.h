@@ -256,7 +256,7 @@ bool AVL::empty()
 }
 
 
-// неведомая хуита unordered_map в ооп
+// неведомая штука unordered_map в ооп
 class STL_unordered_map : public BaseCollection  // -класс, который мы наследуем от класса базовой коллекции
 {
 public:

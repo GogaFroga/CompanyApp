@@ -50,6 +50,17 @@ class DeliveryData {
 			os << endl << data.content_name << endl << data.content_price << endl << data.weight << endl;
 			return os;
 		}
+
+		friend std::ifstream& operator>>(std::ifstream& is, DeliveryData& data)
+		{	
+			is >> data.index;
+			is >> data.sender_name >> data.reciving_name;
+			is >> data.starting_point >> data.ending_point;
+			is >> data.sending_time >> data.receiving_time;
+			is >> data.delivery_price >> data.transport_type;
+			is >> data.content_name >> data.content_price >> data.weight;
+			return is;
+		}
 };
 
 /* 
