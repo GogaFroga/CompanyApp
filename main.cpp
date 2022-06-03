@@ -51,29 +51,25 @@ int main()
 	ofstream out;
 	out.open("C:\\Users\\User\\Documents\\GitHub\\CompanyApp\\DB.txt ", std::ios::app);
 	Fabric fabric;
+	AVL avl;
 
 	if (out.is_open())
 	{
+		//DeliveryData data = fabric.generateRandom();
+		//node* root = new node(0, data); // создаём корневой node
+		//avl.insert(0, data);
+
 		for (int i = 0; i < 10; i++)
 		{
 			DeliveryData data = fabric.generateRandom();
 			cout << data;
 			out << data;
+			avl.insert(i, data);
 		}
 		cout << "\nFile: Succeed\n";
 	}
 	else
 		cout << "\nFile Error: File is not opened\n";
-
-	
-
-	int a[7] = { -3, 1, -5, 42, 2, -6, 8 };
-	node* root = new node(0);
-
-	for (int i = 0; i < 7; i++) {
-		insert(root, a[i]);
-	}
-	print_nodes(root);
 
 	out.close();
 }
