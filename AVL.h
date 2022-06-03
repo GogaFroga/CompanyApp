@@ -53,9 +53,10 @@ class AVL : public BaseCollection	// AVL-класс, который мы наследуем от класса б
 		virtual void clear() {}; //доделать по типу while(!empty) remove(root)!!!!!!!!!!!
 		DeliveryData operator[](int);
 		AVL();
+		node* root;  // root перенесён из PUBLIC!!!!!!!!!!!
+
 
 	private:
-		node* root;  // root перенесён из PUBLIC!!!!!!!!!!!
 		int bfactor(node*);
 		void fixheight(node* p);
 		DeliveryData find(node*, int);
@@ -75,13 +76,17 @@ int AVL::height()
 
 int AVL::bfactor(node* p)
 {
-	return (p->right)->height - (p->left)->height;
+	if (p->left != nullptr && p->right != nullptr)
+		return (p->right)->height - (p->left)->height;
 }
 
 void AVL::fixheight(node* p)
 {
-	unsigned char hl = (p->left)->height;
-	unsigned char hr = (p->right)->height;
+	int hr = 0, hl = 0;
+	if (p->right != nullptr)
+		hr = (p->right)->height;
+	if (p->left != nullptr)
+		hl = (p->left)->height;
 	p->height = (hl > hr ? hl : hr) + 1;
 }
 

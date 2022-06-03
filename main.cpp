@@ -89,7 +89,7 @@ int main()
 				DeliveryData data_i;
 				in >> data_i;
 				cout << "data\n" << data_i;
-				//avl.insert(i, data);
+				avl.insert(j, data_i);
 			}
 			// do smth (if found -> clear avl and break)
 			// clear avl
