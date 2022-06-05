@@ -4,12 +4,10 @@
 
 
 class Fabric {
-	int ID;
+	private:
+		int ID;
 	public:
-		Fabric()
-		{
-			ID = 0;
-		}
+		Fabric() { ID = 0; }
 		DeliveryData generateRandom()
 		{
 			DeliveryData random(++ID);

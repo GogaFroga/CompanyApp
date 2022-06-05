@@ -29,5 +29,8 @@
     <ClInclude Include="AVL.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="comparator.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

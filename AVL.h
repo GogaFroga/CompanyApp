@@ -14,8 +14,17 @@ struct node	// структура для представления узлов дерева
 	node* left;				// указатель на левое поддерево
 	node* right;			// указатель на правое поддерево
 	DeliveryData data;		// ДОБАВИЛ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	node(int k, DeliveryData d) { key = k; data = d;  left = right = 0; height = 1; }
+	node(int k, DeliveryData d) { key = k; data = d;  left = right = nullptr; height = 1; }
 	// node(int k) { key = k; left = right = 0; height = 1; }
+	/*
+	~node() { 
+	if (this->left) 
+		delete this->left;
+	if (this->right)
+		delete this->right;
+	if (this->key)
+		this->key = -1;
+	} */
 };
 
 void print_nodes(node* cur_elem)
@@ -31,18 +40,18 @@ void print_nodes(node* cur_elem)
 
 class BaseCollection	// виртуальный класс базовой коллекции
 {
-public:
-	//	virtual void insert(BaseIterator &it, Ticket &) = 0;
-	//	virtual void erase(size_t) = 0;
-	virtual bool empty() = 0;
-	virtual void clear() = 0;
-	virtual void insert(int, DeliveryData&) = 0;
-	virtual void remove(int key) = 0;
-	virtual DeliveryData operator[](int) = 0;
-	virtual ~BaseCollection() = default;
+	public:
+		//	virtual void insert(BaseIterator &it, Ticket &) = 0;
+		//	virtual void erase(size_t) = 0;
+		virtual bool empty() = 0;
+		virtual void clear() = 0;
+		virtual DeliveryData find(int key) = 0;
+		virtual void insert(int, DeliveryData&) = 0;
+		virtual void remove(int key) = 0;
+		virtual DeliveryData operator[](int) = 0;
+		virtual ~BaseCollection() = default;
 };
 
-// мое AVL в ооп (доделать clear)
 class AVL : public BaseCollection	// AVL-класс, который мы наследуем от класса базовой коллекции
 {
 	public:
@@ -50,21 +59,21 @@ class AVL : public BaseCollection	// AVL-класс, который мы наследуем от класса б
 		void insert(int key, DeliveryData& data) override;
 		void remove(int key) override;
 		bool empty() override;
-		virtual void clear() {}; //доделать по типу while(!empty) remove(root)!!!!!!!!!!!
+		DeliveryData find(int key);
+		void clear() override; //доделать по типу while(!empty) remove(root)!!!!!!!!!!!
 		DeliveryData operator[](int);
 		AVL();
 		node* root;  // root перенесён из PUBLIC!!!!!!!!!!!
-
-
+		
 	private:
 		int bfactor(node*);
 		void fixheight(node* p);
-		DeliveryData find(node*, int);
 		node* rotateright(node* p);
 		node* rotateleft(node* q);
 		node* balance(node* p);
-		node* gavno_insert(node* p, int k, DeliveryData&);
-		node* gavno_remove(node* p, int k);
+		node* rec_insert(node* p, int k, DeliveryData&);
+		node* rec_remove(node* p, int k);
+		DeliveryData rec_find(node* r, int key);
 		node* findmin(node* p);
 		node* removemin(node* p);
 };
@@ -74,10 +83,20 @@ int AVL::height()
 	return root ? root->height : 0;
 }
 
+void AVL::clear()
+{
+	while (!empty())
+		remove(root->key);
+}
+
 int AVL::bfactor(node* p)
 {
 	if (p->left != nullptr && p->right != nullptr)
 		return (p->right)->height - (p->left)->height;
+	else if (p->left == nullptr)
+		return ((p->right)->height);
+	else if (p->right == nullptr)
+		return ((p->left)->height);
 }
 
 void AVL::fixheight(node* p)
@@ -92,45 +111,51 @@ void AVL::fixheight(node* p)
 
 node* AVL::rotateright(node* p) // правый поворот вокруг p
 {
-	node* q = p->left;
-	p->left = q->right;
-	q->right = p;
+	node* rret = p->left;
+	p->left = rret->right;
+	rret->right = p;
 	fixheight(p);
-	fixheight(q);
-	return q;
+	fixheight(rret);
+	return rret;
 }
 
 node* AVL::rotateleft(node* q) // левый поворот вокруг q
 {
-	node* p = q->right;
-	q->right = p->left;
-	p->left = q;
+	node* lret = q->right;
+	q->right = lret->left;
+	lret->left = q;
 	fixheight(q);
-	fixheight(p);
-	return p;
+	fixheight(lret);
+	return lret;
 }
 
-node* AVL::balance(node* p)  // не нужно?
+node* AVL::balance(node* balance_node)  // не нужно?
 {
-	fixheight(p);
-	if (bfactor(p) == 2)
+	fixheight(balance_node);
+	if (bfactor(balance_node) == 2)
 	{
-		if (bfactor(p->right) < 0)
-			p->right = rotateright(p->right);
-		return rotateleft(p);
+		if (bfactor(balance_node->right) < 0)
+			balance_node->right = rotateright(balance_node->right);
+		balance_node = rotateleft(balance_node);
+		return balance_node; // при повороте на лево пропадают правые ноды
 	}
-	if (bfactor(p) == -2)
+	if (bfactor(balance_node) == -2)
 	{
-		if (bfactor(p->left) > 0)
-			p->left = rotateleft(p->left);
-		return rotateright(p);
+		if (bfactor(balance_node->left) > 0)
+			balance_node->left = rotateleft(balance_node->left);
+		return rotateright(balance_node);
 	}
-	return p;
+	return balance_node;
 }
 
 node* AVL::findmin(node* p) // поиск узла с минимальным ключом в дереве p 
 {
-	return p->left ? findmin(p->left) : p;
+	if (p == nullptr)
+		return nullptr;
+	else if (p->left != nullptr)
+		return p->left ? findmin(p->left) : p;
+
+	
 }
 
 node* AVL::removemin(node* p)  // удаление узла с минимальным ключом из дерева p
@@ -141,18 +166,27 @@ node* AVL::removemin(node* p)  // удаление узла с минимальным ключом из дерева p
 	return balance(p);
 }
 
-
-// edit this below
-// 
-// my old insert edited:
-node* AVL::gavno_insert(node* p, int k, DeliveryData& data)  // вставка ключа k в дерево с корнем p
+void AVL::insert(int key, DeliveryData& data)
 {
-	if (!p) return new node(k, data);
-	if (k < p->key)
-		p->left = gavno_insert(p->left, k, data);
+	if (root == nullptr)
+	{
+		root = rec_insert(root, key, data);
+	}
 	else
-		p->right = gavno_insert(p->right, k, data);
-	return balance(p);
+		AVL::root = rec_insert(root, key, data);
+}
+
+node* AVL::rec_insert(node* rec_insert_node, int k, DeliveryData& data)  // вставка ключа k в дерево с корнем p
+{
+	if (!rec_insert_node)
+		return new node(k, data); 
+	if (k < rec_insert_node->key)
+		rec_insert_node->left = rec_insert(rec_insert_node->left, k, data);
+	else
+		rec_insert_node->right = rec_insert(rec_insert_node->right, k, data);
+	//std::cout << p->data;
+	node* temporary_node = balance(rec_insert_node);
+	return temporary_node;
 }
 
 /* OLD
@@ -167,14 +201,6 @@ node* insert(node* p, int k)
 }
 */
 
-void AVL::insert(int key, DeliveryData& data)
-{
-	if (root == nullptr)
-		root = gavno_insert(root, key, data);
-	else
-		gavno_insert(root, key, data);
-}
-
 void AVL::remove(int key)
 {
 	if (key == root->key and !root->left and !root->right)
@@ -183,18 +209,16 @@ void AVL::remove(int key)
 		root = nullptr;
 	}
 	else
-		gavno_remove(root, key);
+		rec_remove(root, key);
 }
 
-// my old remove:
-node* AVL::gavno_remove(node* p, int k) // удаление ключа k из дерева p
+node* AVL::rec_remove(node* p, int k) // удаление ключа k из дерева p
 {
-	// А ЧТО ТЫ БУДЕШЬ ДЕЛАТЬ ЕСЛИ УДАЛЯЕШЬ КОРЕНЬ?
 	if (!p) return 0;
 	if (k < p->key)
-		p->left = gavno_remove(p->left, k);
+		p->left = rec_remove(p->left, k);
 	else if (k > p->key)
-		p->right = gavno_remove(p->right, k);
+		p->right = rec_remove(p->right, k);
 	else //  k == p->key
 	{
 		node* q = p->left;
@@ -208,19 +232,14 @@ node* AVL::gavno_remove(node* p, int k) // удаление ключа k из дерева p
 	}
 	return balance(p);
 }
-// edit this above
 
-AVL::AVL()
+DeliveryData AVL::find(int key)
 {
-	root = nullptr;
+	DeliveryData temp = rec_find(root, key);
+	return(temp);
 }
 
-DeliveryData AVL::operator[](int key)
-{
-	return find(root, key);
-}
-
-DeliveryData AVL::find(node* r, int key)
+DeliveryData AVL::rec_find(node* r, int key)  // сравнение ключей через компаратор
 {
 	if (r == nullptr)
 	{
@@ -235,7 +254,7 @@ DeliveryData AVL::find(node* r, int key)
 	{
 		// left
 		if (r->left != nullptr)
-			return find(r->left, key); // рекурсивный поиск влево
+			return rec_find(r->left, key); // рекурсивный поиск влево
 		else
 		{
 			return DeliveryData(); // не найден
@@ -245,7 +264,7 @@ DeliveryData AVL::find(node* r, int key)
 	{
 		//right
 		if (r->right)
-			return find(r->right, key);// рекурсивный поиск вправо
+			return rec_find(r->right, key); // рекурсивный поиск вправо
 		else
 		{
 			return DeliveryData(); // не найден
@@ -253,12 +272,23 @@ DeliveryData AVL::find(node* r, int key)
 	}
 }
 
+DeliveryData AVL::operator[](int key)
+{
+	return rec_find(root, key);
+}
+
+AVL::AVL()
+{
+	root = nullptr;
+}
+
 bool AVL::empty()
 {
-	if (root)
+	if (root == nullptr)
 		return true;
 	return false;
 }
+
 
 
 // неведомая штука unordered_map в ооп
@@ -267,10 +297,21 @@ class STL_unordered_map : public BaseCollection  // -класс, который мы наследуем
 public:
 	void insert(int key, DeliveryData& data) override;
 	void remove(int key) override;
+	DeliveryData find(int key) override;
 	bool empty() override;
 	void clear() override;
 	STL_unordered_map() {};  // Добавил {} !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	DeliveryData operator[](int) override;
+	friend std::ifstream& operator>>(std::ifstream& is, STL_unordered_map& a)
+	{
+		is >> a;
+		return is;
+	}
+	friend std::ostream& operator<<(std::ostream& os, STL_unordered_map& a)
+	{
+		os << a;
+		return os;
+	}
 private:
 	std::unordered_map<int, DeliveryData> _map;
 };
@@ -283,6 +324,12 @@ void STL_unordered_map::insert(int key, DeliveryData& data)
 void STL_unordered_map::remove(int key)
 {
 	_map.erase(key);
+}
+
+DeliveryData STL_unordered_map::find(int key)
+{
+	//_map.clear();
+	return(0);
 }
 
 bool STL_unordered_map::empty() 
@@ -299,5 +346,3 @@ DeliveryData STL_unordered_map::operator[](int key)
 {
 	return _map.at(key);
 }
-
-//STL_unordered_map::STL_unordered_map() = default;

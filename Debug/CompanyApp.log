@@ -1,4 +1,5 @@
 ﻿  main.cpp
-C:\Users\User\Documents\GitHub\CompanyApp\fabric.h(42,19): warning C4244: =: преобразование "int" в "float", возможна потеря данных
-C:\Users\User\Documents\GitHub\CompanyApp\AVL.h(81): warning C4715: AVL::bfactor: значение возвращается не при всех путях выполнения
+C:\Users\User\Documents\GitHub\CompanyApp\fabric.h(40,19): warning C4244: =: преобразование "int" в "float", возможна потеря данных
+C:\Users\User\Documents\GitHub\CompanyApp\AVL.h(100): warning C4715: AVL::bfactor: значение возвращается не при всех путях выполнения
+C:\Users\User\Documents\GitHub\CompanyApp\AVL.h(159): warning C4715: AVL::findmin: значение возвращается не при всех путях выполнения
   CompanyApp.vcxproj -> C:\Users\User\Documents\GitHub\CompanyApp\Debug\CompanyApp.exe

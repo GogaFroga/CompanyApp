@@ -9,7 +9,7 @@ class DeliveryData {
 	private:
 
 	public:
-		int index;				//
+		int index = -1;				//
 		string sender_name;		// SENDING_INFO
 		string starting_point;	// SENDING_INFO
 		int sending_time;		// SENDING_INFO
@@ -52,7 +52,7 @@ class DeliveryData {
 		}
 
 		friend std::ifstream& operator>>(std::ifstream& is, DeliveryData& data)
-		{	
+		{
 			is >> data.index;
 			is >> data.sender_name >> data.reciving_name;
 			is >> data.starting_point >> data.ending_point;
@@ -61,6 +61,27 @@ class DeliveryData {
 			is >> data.content_name >> data.content_price >> data.weight;
 			return is;
 		}
+
+
+		DeliveryData& operator=(const DeliveryData& data) = default;
+
+		DeliveryData(const DeliveryData& data) = default;
+
+		/*DeliveryData& operator=(const DeliveryData& data) {
+	index = data.index;
+	sender_name = data.sender_name;
+	starting_point = data.starting_point;
+	sending_time = data.sending_time;
+	reciving_name = data.reciving_name;
+	ending_point = data.ending_point;
+	receiving_time = data.receiving_time;
+	delivery_price = data.delivery_price;
+	transport_type = data.transport_type;
+	weight = data.weight;
+	content_price = data.content_price;
+	content_name = data.content_name;
+	return *this;
+}*/
 };
 
 /* 

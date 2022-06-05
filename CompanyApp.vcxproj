@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AVL.h" />
+    <ClInclude Include="comparator.h" />
     <ClInclude Include="data.h" />
     <ClInclude Include="fabric.h" />
   </ItemGroup>
